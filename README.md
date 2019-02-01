@@ -1,4 +1,4 @@
-# Migrator
+# Migrator [![Build Status](https://api.travis-ci.org/coenjacobs/migrator.png)](https://travis-ci.org/coenjacobs/migrator) [![Latest Stable Version](https://poser.pugx.org/coenjacobs/migrator/v/stable.svg)](https://packagist.org/packages/coenjacobs/migrator) [![License](https://poser.pugx.org/coenjacobs/migrator/license.svg)](https://packagist.org/packages/coenjacobs/migrator)
 
 Migrator allows you to run migrations on your database, for your WordPress plugin specific needs. This can be to either add or remove tables, change the structure of the tables, or change the data being contained in your tables.
 
