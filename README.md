@@ -1,29 +1,35 @@
-#Migrator
+# Migrator
+
 Migrator allows you to run migrations on your database, for your WordPress plugin specific needs. This can be to either add or remove tables, change the structure of the tables, or change the data being contained in your tables.
 
 This package requires PHP 5.6 or higher in order to run the tool.
 
 **Warning:** This package is very experimental and breaking changes are very likely until version 1.0.0 is tagged. Use with caution, always wear a helmet when using this in production environments.
 
-##Installation
+## Installation
+
 This package can be best installed inside your plugin, by using Composer:
 
 `composer require coenjacobs/migrator`
 
 Best results are achieved when installing this library in combination with the [Mozart package](https://github.com/coenjacobs/mozart), so Migrator will be installed in your own namespace to prevent conflicts.
 
-##Workers
+## Workers
+
 Worker classes are the classes responsible for actually performing the queries your migrations want to run. By default, a `$wpdb` based Worker is available, in the `CoenJacobs\Migrator\Workers\WpdbWorker` class. This utilises the default `$wpdb` global variable in WordPress installations, to run your queries. You can provide your own implementation of the Worker class, as long as they implement the `CoenJacobs\Migrator\Contracts\Worker` interface.
 
-##Loggers
+## Loggers
+
 Loggers take care of registering the migrations that have been run already. This is to ensure that no migrations are being run more than once. By default, there is a database based Logger available, in the `CoenJacobs\Migrator\Loggers\DatabaseLogger` class. This class actually uses the aforementioned `$wpdb` based Worker, in order to log the migration data into a specific database table. You can provide your own implementation of the Logger class, as long as they implement the `CoenJacobs\Migrator\Contracts\Logger` interface.
 
-##Migration structure
+## Migration structure
+
 All of the migrations are required to follow a specific format, being enforced by the `CoenJacobs\Migrator\Contracts\Migration.php` interface. This interface enforces your migration class to contain at least two methods: `up()` and `down()`. These two methods are used to run and rollback your migration.
 
 There is a helper `BaseMigration` available, to help with setting up the right variables for the migration, such as the Worker.
 
 A basic migration example looks like this:
+
 ```
 <?php
 
@@ -59,7 +65,8 @@ class CreateTestTable extends BaseMigration
 }
 ```
 
-##Register migrations
+## Register migrations
+
 In order for this library to run your migrations, the migrations need to be added to the Handler. The Handler is the core class of this library, which takes care of running your migrations in the right order.
 
 The Handler needs to be provided with a Worker and a Logger, in order to set it up:
@@ -83,7 +90,8 @@ $migrator->add('yourplugin', new CreateTestTable($worker));
 
 The first parameter in the `$migration->add()` method should be a unique identifier for your plugin. The handler runs the migrations on a per plugin basis, using this unique identifier as the key to call the right migrations to be run. 
 
-##Running migrations
+## Running migrations
+
 Running migrations, after they have been setup, is as easy as running the `$migration->up()` method with the first parameter being the unique identifier for your plugin:
 
 ```
