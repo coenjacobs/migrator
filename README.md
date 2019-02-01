@@ -30,7 +30,7 @@ There is a helper `BaseMigration` available, to help with setting up the right v
 
 A basic migration example looks like this:
 
-```
+```php
 <?php
 
 use CoenJacobs\Migrator\Migrations\BaseMigration;
@@ -71,7 +71,7 @@ In order for this library to run your migrations, the migrations need to be adde
 
 The Handler needs to be provided with a Worker and a Logger, in order to set it up:
 
-```
+```php
 use CoenJacobs\Migrator\Handler;
 use CoenJacobs\Migrator\Loggers\DatabaseLogger;
 use CoenJacobs\Migrator\Workers\WpdbWorker;
@@ -82,7 +82,7 @@ $migrator = new Handler($worker, new DatabaseLogger());
 
 After that, the Handler is ready to accept new migrations to be added, before they can be run. Each Migration needs to be provided with a Worker class, again implementing the `CoenJacobs\Migrator\Contracts\Worker` interface, which is responsible for running the queries inside your Migration. You can pass a different Worker class to your Migration, than the one you have passed to the Handler, but you can also use the same:
 
-```
+```php
 use YourPlugin\Migrations\CreateTestTable
 
 $migrator->add('yourplugin', new CreateTestTable($worker));
@@ -94,7 +94,7 @@ The first parameter in the `$migration->add()` method should be a unique identif
 
 Running migrations, after they have been setup, is as easy as running the `$migration->up()` method with the first parameter being the unique identifier for your plugin:
 
-```
+```php
 $migrator->up('yourplugin');
 ```
 
