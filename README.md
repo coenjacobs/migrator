@@ -20,7 +20,9 @@ Worker classes are the classes responsible for actually performing the queries y
 
 ## Loggers
 
-Loggers take care of registering the migrations that have been run already. This is to ensure that no migrations are being run more than once. By default, there is a database based Logger available, in the `CoenJacobs\Migrator\Loggers\DatabaseLogger` class. This class actually uses the aforementioned `$wpdb` based Worker, in order to log the migration data into a specific database table. You can provide your own implementation of the Logger class, as long as they implement the `CoenJacobs\Migrator\Contracts\Logger` interface.
+Loggers take care of registering the migrations that have been run already. This is to ensure that no migrations are being run more than once. By default, there is a database based Logger available, in the `CoenJacobs\Migrator\Loggers\DatabaseLogger` class. This class actually uses the aforementioned `$wpdb` based Worker, in order to log the migration data into a specific database table. This database table is being created, using the table name you've provided as the first contructor argument.
+
+You can provide your own implementation of the Logger class, as long as they implement the `CoenJacobs\Migrator\Contracts\Logger` interface.
 
 ## Migration structure
 
@@ -77,7 +79,8 @@ use CoenJacobs\Migrator\Loggers\DatabaseLogger;
 use CoenJacobs\Migrator\Workers\WpdbWorker;
 
 $worker = new WpdbWorker();
-$migrator = new Handler($worker, new DatabaseLogger());
+$logger = new DatabaseLogger('migrations_table_name');
+$handler = new Handler($worker, $logger);
 ```
 
 After that, the Handler is ready to accept new migrations to be added, before they can be run. You pass the class as a string of the class name, where the class itself again implements the `CoenJacobs\Migrator\Contracts\Migration` interface:
