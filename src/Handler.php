@@ -37,7 +37,7 @@ class Handler
 
     private function setupCoreMigrations()
     {
-        $this->add('core', new CreateMigrationsTable($this->worker));
+        $this->add('core', CreateMigrationsTable::class);
 
         // From here on, the 'core' index as $plugin_key is a reserved name and
         // can't be used by anyone else.
@@ -57,16 +57,16 @@ class Handler
 
     /**
      * @param string $pluginKey
-     * @param Migration $migration
+     * @param $migrationClassName
      * @throws ReservedNameException
      */
-    public function add($pluginKey, Migration $migration)
+    public function add($pluginKey, $migrationClassName)
     {
         if ($this->isReservedName($pluginKey)) {
             throw new ReservedNameException($pluginKey . ' is a reserved name and can not be used by implementations.');
         }
 
-        $this->migrations[ $pluginKey ][] = $migration;
+        $this->migrations[ $pluginKey ][] = $migrationClassName;
     }
 
     /**
@@ -91,18 +91,16 @@ class Handler
         $migrationsToRun = [];
 
         // Add core migrations first
-        foreach ($this->migrations[ 'core' ] as $migration) {
-            /** @var $migration Migration */
-            if (! in_array($migration->getId(), $runMigrations)) {
-                $migrationsToRun['core'][] = $migration;
+        foreach ($this->migrations[ 'core' ] as $migrationClass) {
+            if (! in_array($migrationClass::id(), $runMigrations)) {
+                $migrationsToRun['core'][] = new $migrationClass($this->worker);
             }
         }
 
         // Add added migrations for $pluginKey second
-        foreach ($this->migrations[ $pluginKey ] as $migration) {
-            /** @var $migration Migration */
-            if (! in_array($migration->getId(), $runMigrations)) {
-                $migrationsToRun[ $pluginKey ][] = $migration;
+        foreach ($this->migrations[ $pluginKey ] as $migrationClass) {
+            if (! in_array($migrationClass::id(), $runMigrations)) {
+                $migrationsToRun[ $pluginKey ][] = new $migrationClass($this->worker);
             }
         }
 
@@ -131,10 +129,9 @@ class Handler
         $migrationsToRun = [];
 
         // Add added migrations for $pluginKey second
-        foreach ($this->migrations[ $pluginKey ] as $migration) {
-            /** @var $migration Migration */
-            if (in_array($migration->getId(), $runMigrations)) {
-                $migrationsToRun[ $pluginKey ][] = $migration;
+        foreach ($this->migrations[ $pluginKey ] as $migrationClass) {
+            if (in_array($migrationClass::id(), $runMigrations)) {
+                $migrationsToRun[ $pluginKey ][] = new $migrationClass($this->worker);
             }
         }
 

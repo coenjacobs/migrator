@@ -8,7 +8,7 @@ class DatabaseLogger extends BaseLogger
 {
     public function add($plugin_key, Migration $migration, $batch)
     {
-        $id = $migration->getId();
+        $id = $migration->id();
         $tableName = $this->worker->getPrefix() . 'migrator_migrations';
 
         $batch = intval($batch);
@@ -20,7 +20,7 @@ class DatabaseLogger extends BaseLogger
 
     public function remove($plugin_key, Migration $migration)
     {
-        $id = $migration->getId();
+        $id = $migration->id();
         $tableName = $this->worker->getPrefix() . 'migrator_migrations';
         $query = "DELETE FROM $tableName (migration, plugin_key)
                   VALUES ('$id', '$plugin_key')";
