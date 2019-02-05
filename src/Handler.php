@@ -5,8 +5,6 @@ namespace CoenJacobs\Migrator;
 use CoenJacobs\Migrator\Contracts\Logger;
 use CoenJacobs\Migrator\Contracts\Worker;
 use CoenJacobs\Migrator\Contracts\Migration;
-use CoenJacobs\Migrator\Exceptions\ReservedNameException;
-use CoenJacobs\Migrator\Migrations\CreateMigrationsTable;
 
 class Handler
 {
@@ -31,41 +29,14 @@ class Handler
         $this->worker = $worker;
         $this->logger = $logger;
         $this->logger->setWorker($this->worker);
-
-        $this->setupCoreMigrations();
-    }
-
-    private function setupCoreMigrations()
-    {
-        $this->add('core', CreateMigrationsTable::class);
-
-        // From here on, the 'core' index as $plugin_key is a reserved name and
-        // can't be used by anyone else.
-        $this->reservedNames = [
-            'core'
-        ];
-    }
-
-    /**
-     * @param string $pluginKey
-     * @return bool
-     */
-    public function isReservedName($pluginKey)
-    {
-        return in_array($pluginKey, $this->reservedNames);
     }
 
     /**
      * @param string $pluginKey
      * @param $migrationClassName
-     * @throws ReservedNameException
      */
     public function add($pluginKey, $migrationClassName)
     {
-        if ($this->isReservedName($pluginKey)) {
-            throw new ReservedNameException($pluginKey . ' is a reserved name and can not be used by implementations.');
-        }
-
         $this->migrations[ $pluginKey ][] = $migrationClassName;
     }
 
@@ -74,28 +45,16 @@ class Handler
      * Core migrations will always be run first to setup base tables for logging.
      *
      * @param string $pluginKey
-     * @throws ReservedNameException
      */
     public function up($pluginKey)
     {
-        if ($this->isReservedName($pluginKey)) {
-            throw new ReservedNameException($pluginKey . ' is a reserved name and can not be used by implementations.');
-        }
-
         if (! isset($this->migrations[ $pluginKey ])) {
             return;
         }
 
-        $runMigrations = $this->logger->getLoggedMigrations(['core', $pluginKey]);
+        $runMigrations = $this->logger->getLoggedMigrations([$pluginKey]);
 
         $migrationsToRun = [];
-
-        // Add core migrations first
-        foreach ($this->migrations[ 'core' ] as $migrationClass) {
-            if (! in_array($migrationClass::id(), $runMigrations)) {
-                $migrationsToRun['core'][] = new $migrationClass($this->worker);
-            }
-        }
 
         // Add added migrations for $pluginKey second
         foreach ($this->migrations[ $pluginKey ] as $migrationClass) {
@@ -112,14 +71,9 @@ class Handler
      * Core migrations will not be reversed since they can still be used by another plugin.
      *
      * @param string $pluginKey
-     * @throws ReservedNameException
      */
     public function down($pluginKey)
     {
-        if ($this->isReservedName($pluginKey)) {
-            throw new ReservedNameException($pluginKey . ' is a reserved name and can not be used by implementations.');
-        }
-
         if (! isset($this->migrations[ $pluginKey ])) {
             return;
         }
