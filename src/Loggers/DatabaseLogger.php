@@ -29,29 +29,6 @@ class DatabaseLogger extends BaseLogger
         }
     }
 
-    public function isTableSetup()
-    {
-        if ($this->setup === true) {
-            return true;
-        }
-
-        $databaseName = $this->worker->getDatabaseName();
-
-        // Check if table exists before we try to query it
-        $query = "SELECT count(*)
-                  FROM information_schema.TABLES
-                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$this->tableName')";
-
-        $result = $this->worker->getResults($query);
-
-        if (empty($result) || $result[0]->{"count(*)"} == 0) {
-            return false;
-        }
-
-        $this->setup = true;
-        return true;
-    }
-
     public function add($plugin_key, Migration $migration, $batch)
     {
         $this->init();
@@ -87,6 +64,7 @@ class DatabaseLogger extends BaseLogger
         foreach ($results as $result) {
             $migrations[] = $result->migration;
         }
+
         return $migrations;
     }
 
@@ -102,5 +80,28 @@ class DatabaseLogger extends BaseLogger
         }
 
         return array_pop($results)->batch;
+    }
+
+    protected function isTableSetup()
+    {
+        if ($this->setup === true) {
+            return true;
+        }
+
+        $databaseName = $this->worker->getDatabaseName();
+
+        // Check if table exists before we try to query it
+        $query = "SELECT count(*)
+                  FROM information_schema.TABLES
+                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$this->tableName')";
+
+        $result = $this->worker->getResults($query);
+
+        if (empty($result) || $result[0]->{"count(*)"} == 0) {
+            return false;
+        }
+
+        $this->setup = true;
+        return true;
     }
 }
