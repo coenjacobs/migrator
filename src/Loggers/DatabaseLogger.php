@@ -24,6 +24,8 @@ class DatabaseLogger extends BaseLogger
             $migration = new CreateMigrationsTable($this->worker);
             $migration->setTableName($this->tableName);
             $migration->up();
+
+            $this->setup = true;
         }
     }
 
