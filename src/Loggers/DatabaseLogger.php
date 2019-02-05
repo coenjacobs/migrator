@@ -3,17 +3,31 @@
 namespace CoenJacobs\Migrator\Loggers;
 
 use CoenJacobs\Migrator\Contracts\Migration;
+use CoenJacobs\Migrator\Handler;
+use CoenJacobs\Migrator\Migrations\CreateMigrationsTable;
 
 class DatabaseLogger extends BaseLogger
 {
+    /** @var string */
+    protected $tableName;
+
+    public function setTableName($tableName)
+    {
+        $this->tableName = $tableName;
+    }
+
+    public function registerMigration($pluginKey, Handler $handler)
+    {
+        $handler->add($pluginKey, CreateMigrationsTable::class);
+    }
+
     public function add($plugin_key, Migration $migration, $batch)
     {
         $id = $migration->id();
-        $tableName = $this->worker->getPrefix() . 'migrator_migrations';
 
         $batch = intval($batch);
 
-        $query = "INSERT INTO $tableName (migration, plugin_key, batch)
+        $query = "INSERT INTO $this->tableName (migration, plugin_key, batch)
                   VALUES ('$id', '$plugin_key', '$batch')";
         $this->worker->query($query);
     }
@@ -21,8 +35,7 @@ class DatabaseLogger extends BaseLogger
     public function remove($plugin_key, Migration $migration)
     {
         $id = $migration->id();
-        $tableName = $this->worker->getPrefix() . 'migrator_migrations';
-        $query = "DELETE FROM $tableName (migration, plugin_key)
+        $query = "DELETE FROM $this->tableName (migration, plugin_key)
                   VALUES ('$id', '$plugin_key')";
         $this->worker->query($query);
     }
@@ -30,12 +43,11 @@ class DatabaseLogger extends BaseLogger
     public function getLoggedMigrations($plugin_keys)
     {
         $databaseName = $this->worker->getDatabaseName();
-        $tableName = $this->worker->getPrefix() . 'migrator_migrations';
 
         // Check if table exists before we try to query it
         $query = "SELECT count(*)
                   FROM information_schema.TABLES
-                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$tableName')";
+                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$this->tableName')";
 
         $result = $this->worker->getResults($query);
 
@@ -43,7 +55,7 @@ class DatabaseLogger extends BaseLogger
             return [];
         }
 
-        $query = 'SELECT migration FROM '.$tableName.'
+        $query = 'SELECT migration FROM '.$this->tableName.'
                   WHERE plugin_key IN ("'. implode('","', $plugin_keys) .'")';
 
         $results = $this->worker->getResults($query);
@@ -59,12 +71,11 @@ class DatabaseLogger extends BaseLogger
     public function getHighestBatchNumber()
     {
         $databaseName = $this->worker->getDatabaseName();
-        $tableName = $this->worker->getPrefix() . 'migrator_migrations';
 
         // Check if table exists before we try to query it
         $query = "SELECT count(*)
                   FROM information_schema.TABLES
-                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$tableName')";
+                  WHERE (TABLE_SCHEMA = '$databaseName') AND (TABLE_NAME = '$this->tableName')";
 
         $result = $this->worker->getResults($query);
 
@@ -72,8 +83,7 @@ class DatabaseLogger extends BaseLogger
             return 0;
         }
 
-        $tableName = $this->worker->getPrefix() . 'migrator_migrations';
-        $query = 'SELECT MAX(batch) AS batch FROM '.$tableName.';';
+        $query = 'SELECT MAX(batch) AS batch FROM '.$this->tableName.';';
         $results = $this->worker->getResults($query);
 
         if (empty($results)) {
