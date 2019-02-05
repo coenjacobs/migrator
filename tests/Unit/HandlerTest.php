@@ -2,98 +2,81 @@
 
 namespace CoenJacobs\MigratorTests\Unit;
 
+use CoenJacobs\Migrator\Contracts\Migration as MigrationContract;
 use CoenJacobs\Migrator\Handler;
-use CoenJacobs\Migrator\Contracts\Logger;
-use CoenJacobs\Migrator\Contracts\Worker;
-use CoenJacobs\Migrator\Contracts\Migration;
-use CoenJacobs\Migrator\Exceptions\ReservedNameException;
-use PHPUnit_Framework_TestCase;
+use CoenJacobs\Migrator\Loggers\BaseLogger;
+use CoenJacobs\Migrator\Migrations\BaseMigration;
+use CoenJacobs\Migrator\Workers\BaseWorker;
+use PHPUnit\Framework\TestCase;
 
-class HandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends TestCase
 {
-    private $worker;
-    private $logger;
-    private $downLogger;
-    private $migration;
-
-    public function setUp()
+    /** @test */
+    public function callsUpOnMigration()
     {
-        $this->worker = $this->getMockBuilder(Worker::class)
-            ->getMock();
+        $this->expectExceptionMessage('up method called');
 
-        $this->logger = $this->getMockBuilder(Logger::class)
-            ->getMock();
-        $this->logger->expects($this->any())
-            ->method('getLoggedMigrations')
-            ->will($this->returnValue([]));
-
-        $this->downLogger = $this->getMockBuilder(Logger::class)
-            ->getMock();
-        $this->downLogger->expects($this->any())
-            ->method('getLoggedMigrations')
-            ->will($this->returnValue(['test-migration']));
-
-        $this->migration = $this->getMockBuilder(Migration::class)
-            ->getMock();
-        $this->migration->expects($this->any())
-            ->method('getId')
-            ->will($this->returnValue('test-migration'));
+        $handler = new Handler(new Worker(), new Logger());
+        $handler->add('test-up-migrations', Migration::class);
+        $handler->up('test-up-migrations');
     }
 
     /** @test */
-    public function testHandlerCallsUpOnMigration()
+    public function callsDownOnMigration()
     {
-        $this->migration->expects($this->once())->method('up');
+        $this->expectExceptionMessage('down method called');
 
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->add('test', $this->migration);
-        $handler->up('test');
+        $handler = new Handler(new Worker(), new Logger());
+        $handler->add('test-down-migrations', Migration::class);
+        $handler->down('test-down-migrations');
+    }
+}
+
+class Logger extends BaseLogger
+{
+    public function add($plugin_key, MigrationContract $migration, $batch) { }
+    public function remove($plugin_key, MigrationContract $migration) { }
+
+    public function getLoggedMigrations($plugin_keys)
+    {
+        if (in_array('test-down-migrations', $plugin_keys)) {
+            return ['test-migration'];
+        } else {
+            return [];
+        }
     }
 
-    /** @test */
-    public function testHandlerCallsDownOnMigration()
-    {
-        $this->migration->expects($this->once())->method('down');
+    public function getHighestBatchNumber() { }
+}
 
-        $handler = new Handler($this->worker, $this->downLogger);
-        $handler->add('test', $this->migration);
-        $handler->down('test');
+class Worker extends BaseWorker
+{
+    public function getPrefix() { }
+    public function getDatabaseName() { }
+    public function query($query) { }
+    public function getResults($query) { }
+}
+
+class Migration extends BaseMigration
+{
+    public static function id()
+    {
+        return 'test-migration';
     }
 
-    /** @test */
-    public function testHandlerDoesntCallDifferentPluginMigrations()
+    /**
+     * @throws \Exception
+     */
+    public function up()
     {
-        $this->migration->expects($this->never())->method($this->anything());
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->add('another-key', $this->migration);
-        $handler->up('test');
+        throw new \Exception('up method called');
     }
 
-    /** @test */
-    public function testHandlerDoesntAcceptMigrationsWithReservedName()
+    /**
+     * @throws \Exception
+     */
+    public function down()
     {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->add('core', $this->migration);
-    }
-
-    /** @test */
-    public function testHandlerDoesntUpMigrationsWithReservedName()
-    {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->up('core', $this->migration);
-    }
-
-    /** @test */
-    public function testHandlerDoesntDownMigrationsWithReservedName()
-    {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->down('core', $this->migration);
+        throw new \Exception('down method called');
     }
 }
