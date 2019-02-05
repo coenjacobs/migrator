@@ -4,7 +4,7 @@ namespace CoenJacobs\Migrator\Contracts;
 
 interface Migration
 {
-    public function getId();
+    public static function id();
     public function up();
     public function down();
 }

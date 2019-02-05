@@ -4,7 +4,7 @@ namespace CoenJacobs\Migrator\Migrations;
 
 class CreateMigrationsTable extends BaseMigration
 {
-    public function getId()
+    public static function id()
     {
         return 'migrator-1-migrations-table';
     }
