@@ -10,6 +10,9 @@ class DatabaseLogger extends BaseLogger
     /** @var string */
     protected $tableName;
 
+    /** @var bool */
+    protected $setup = false;
+
     public function __construct($tableName)
     {
         $this->tableName = $tableName;
@@ -26,6 +29,10 @@ class DatabaseLogger extends BaseLogger
 
     public function isTableSetup()
     {
+        if ($this->setup === true) {
+            return true;
+        }
+
         $databaseName = $this->worker->getDatabaseName();
 
         // Check if table exists before we try to query it
@@ -39,6 +46,7 @@ class DatabaseLogger extends BaseLogger
             return false;
         }
 
+        $this->setup = true;
         return true;
     }
 
