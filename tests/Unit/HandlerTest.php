@@ -7,9 +7,9 @@ use CoenJacobs\Migrator\Handler;
 use CoenJacobs\Migrator\Loggers\BaseLogger;
 use CoenJacobs\Migrator\Migrations\BaseMigration;
 use CoenJacobs\Migrator\Workers\BaseWorker;
-use PHPUnit_Framework_TestCase;
+use PHPUnit\Framework\TestCase;
 
-class HandlerTest extends PHPUnit_Framework_TestCase
+class HandlerTest extends TestCase
 {
     /** @test */
     public function callsUpOnMigration()
