@@ -6,7 +6,6 @@ use CoenJacobs\Migrator\Handler;
 use CoenJacobs\Migrator\Contracts\Logger;
 use CoenJacobs\Migrator\Contracts\Worker;
 use CoenJacobs\Migrator\Contracts\Migration;
-use CoenJacobs\Migrator\Exceptions\ReservedNameException;
 use PHPUnit_Framework_TestCase;
 
 class HandlerTest extends PHPUnit_Framework_TestCase
@@ -68,32 +67,5 @@ class HandlerTest extends PHPUnit_Framework_TestCase
         $handler = new Handler($this->worker, $this->logger);
         $handler->add('another-key', $this->migration);
         $handler->up('test');
-    }
-
-    /** @test */
-    public function testHandlerDoesntAcceptMigrationsWithReservedName()
-    {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->add('core', $this->migration);
-    }
-
-    /** @test */
-    public function testHandlerDoesntUpMigrationsWithReservedName()
-    {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->up('core', $this->migration);
-    }
-
-    /** @test */
-    public function testHandlerDoesntDownMigrationsWithReservedName()
-    {
-        $this->expectException(ReservedNameException::class);
-
-        $handler = new Handler($this->worker, $this->logger);
-        $handler->down('core', $this->migration);
     }
 }
