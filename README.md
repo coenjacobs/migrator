@@ -2,7 +2,7 @@
 
 Migrator allows you to run migrations on your database, for your WordPress plugin specific needs. This can be to either add or remove tables, change the structure of the tables, or change the data being contained in your tables.
 
-This package requires PHP 5.6 or higher in order to run the tool.
+This package requires PHP 7.2 or higher in order to run the tool.
 
 **Warning:** This package is very experimental and breaking changes are very likely until version 1.0.0 is tagged. Use with caution, always wear a helmet when using this in production environments.
 
