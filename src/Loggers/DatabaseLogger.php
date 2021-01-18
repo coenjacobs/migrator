@@ -29,7 +29,7 @@ class DatabaseLogger extends BaseLogger
         }
     }
 
-    public function add(string $plugin_key, Migration $migration, int $batch)
+    public function add(string $plugin_key, Migration $migration, int $batch): int
     {
         $this->init();
         $id = $migration->id();
@@ -38,16 +38,16 @@ class DatabaseLogger extends BaseLogger
 
         $query = "INSERT INTO $this->tableName (migration, plugin_key, batch)
                   VALUES ('$id', '$plugin_key', '$batch')";
-        $this->worker->query($query);
+        return $this->worker->query($query);
     }
 
-    public function remove(string $plugin_key, Migration $migration)
+    public function remove(string $plugin_key, Migration $migration): int
     {
         $this->init();
         $id = $migration->id();
         $query = "DELETE FROM $this->tableName (migration, plugin_key)
                   VALUES ('$id', '$plugin_key')";
-        $this->worker->query($query);
+        return $this->worker->query($query);
     }
 
     public function getLoggedMigrations(array $plugin_keys): array

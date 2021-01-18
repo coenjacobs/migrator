@@ -6,6 +6,6 @@ interface Worker
 {
     public function getPrefix(): string;
     public function getDatabaseName(): string;
-    public function query(string $query);
-    public function getResults(string $query);
+    public function query(string $query): int;
+    public function getResults(string $query): array;
 }

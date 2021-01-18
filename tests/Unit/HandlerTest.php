@@ -34,10 +34,10 @@ class HandlerTest extends TestCase
 
 class Logger extends BaseLogger
 {
-    public function add($plugin_key, MigrationContract $migration, $batch)
+    public function add($plugin_key, MigrationContract $migration, $batch): int
     {
     }
-    public function remove($plugin_key, MigrationContract $migration)
+    public function remove($plugin_key, MigrationContract $migration): int
     {
     }
 
@@ -64,10 +64,10 @@ class Worker extends BaseWorker
     public function getDatabaseName(): string
     {
     }
-    public function query($query)
+    public function query($query): int
     {
     }
-    public function getResults($query)
+    public function getResults($query): array
     {
     }
 }

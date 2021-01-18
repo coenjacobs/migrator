@@ -4,11 +4,15 @@ namespace CoenJacobs\Migrator\Workers;
 
 class WpdbWorker extends BaseWorker
 {
-    /** @var */
+    /** @var mixed */
     protected $wpdb;
 
     public function __construct()
     {
+        /**
+         * @var mixed
+         * @psalm-suppress MissingPropertyType
+         */
         global $wpdb;
         $this->wpdb = $wpdb;
     }
@@ -23,12 +27,18 @@ class WpdbWorker extends BaseWorker
         return $this->wpdb->dbname;
     }
 
-    public function query(string $query)
+    public function query(string $query): int
     {
-        return $this->wpdb->query($query);
+        $result = $this->wpdb->query($query);
+
+        if (is_bool($result)) {
+            return $result ? 1 : 0;
+        }
+
+        return (int) $result;
     }
 
-    public function getResults(string $query)
+    public function getResults(string $query): array
     {
         return $this->wpdb->get_results($query);
     }
