@@ -34,10 +34,14 @@ class HandlerTest extends TestCase
 
 class Logger extends BaseLogger
 {
-    public function add($plugin_key, MigrationContract $migration, $batch) { }
-    public function remove($plugin_key, MigrationContract $migration) { }
+    public function add($plugin_key, MigrationContract $migration, $batch)
+    {
+    }
+    public function remove($plugin_key, MigrationContract $migration)
+    {
+    }
 
-    public function getLoggedMigrations($plugin_keys)
+    public function getLoggedMigrations(array $plugin_keys): array
     {
         if (in_array('test-down-migrations', $plugin_keys)) {
             return ['test-migration'];
@@ -46,20 +50,31 @@ class Logger extends BaseLogger
         }
     }
 
-    public function getHighestBatchNumber() { }
+    public function getHighestBatchNumber(): int
+    {
+        return 1;
+    }
 }
 
 class Worker extends BaseWorker
 {
-    public function getPrefix() { }
-    public function getDatabaseName() { }
-    public function query($query) { }
-    public function getResults($query) { }
+    public function getPrefix(): string
+    {
+    }
+    public function getDatabaseName(): string
+    {
+    }
+    public function query($query)
+    {
+    }
+    public function getResults($query)
+    {
+    }
 }
 
 class Migration extends BaseMigration
 {
-    public static function id()
+    public static function id(): string
     {
         return 'test-migration';
     }
@@ -67,7 +82,7 @@ class Migration extends BaseMigration
     /**
      * @throws \Exception
      */
-    public function up()
+    public function up(): void
     {
         throw new \Exception('up method called');
     }
@@ -75,7 +90,7 @@ class Migration extends BaseMigration
     /**
      * @throws \Exception
      */
-    public function down()
+    public function down(): void
     {
         throw new \Exception('down method called');
     }
