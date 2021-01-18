@@ -7,10 +7,13 @@ use CoenJacobs\Migrator\Contracts\Worker;
 
 abstract class BaseLogger implements Logger
 {
-    /** @var Worker */
+    /**
+     * @var Worker
+     * @psalm-suppress PropertyNotSetInConstructor
+     */
     protected $worker;
 
-    public function setWorker(Worker $worker)
+    public function setWorker(Worker $worker): void
     {
         $this->worker = $worker;
     }

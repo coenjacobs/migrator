@@ -4,8 +4,8 @@ namespace CoenJacobs\Migrator\Contracts;
 
 interface Worker
 {
-    public function getPrefix();
-    public function getDatabaseName();
-    public function query($query);
-    public function getResults($query);
+    public function getPrefix(): string;
+    public function getDatabaseName(): string;
+    public function query(string $query);
+    public function getResults(string $query);
 }

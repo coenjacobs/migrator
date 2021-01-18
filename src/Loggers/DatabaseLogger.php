@@ -13,12 +13,12 @@ class DatabaseLogger extends BaseLogger
     /** @var bool */
     protected $setup = false;
 
-    public function __construct($tableName)
+    public function __construct(string $tableName)
     {
         $this->tableName = $tableName;
     }
 
-    public function init()
+    public function init(): void
     {
         if (!$this->isTableSetup()) {
             $migration = new CreateMigrationsTable($this->worker);
@@ -29,7 +29,7 @@ class DatabaseLogger extends BaseLogger
         }
     }
 
-    public function add($plugin_key, Migration $migration, $batch)
+    public function add(string $plugin_key, Migration $migration, int $batch)
     {
         $this->init();
         $id = $migration->id();
@@ -41,7 +41,7 @@ class DatabaseLogger extends BaseLogger
         $this->worker->query($query);
     }
 
-    public function remove($plugin_key, Migration $migration)
+    public function remove(string $plugin_key, Migration $migration)
     {
         $this->init();
         $id = $migration->id();
@@ -50,7 +50,7 @@ class DatabaseLogger extends BaseLogger
         $this->worker->query($query);
     }
 
-    public function getLoggedMigrations($plugin_keys)
+    public function getLoggedMigrations(array $plugin_keys): array
     {
         $this->init();
 
@@ -68,7 +68,7 @@ class DatabaseLogger extends BaseLogger
         return $migrations;
     }
 
-    public function getHighestBatchNumber()
+    public function getHighestBatchNumber(): int
     {
         $this->init();
 
@@ -79,10 +79,10 @@ class DatabaseLogger extends BaseLogger
             return 0;
         }
 
-        return array_pop($results)->batch;
+        return (int) array_pop($results)->batch;
     }
 
-    protected function isTableSetup()
+    protected function isTableSetup(): bool
     {
         if ($this->setup === true) {
             return true;

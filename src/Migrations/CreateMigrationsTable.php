@@ -4,20 +4,12 @@ namespace CoenJacobs\Migrator\Migrations;
 
 class CreateMigrationsTable extends BaseMigration
 {
-    /** @var string */
-    protected $tableName;
-
-    public static function id()
+    public static function id(): string
     {
         return 'migrator-1-migrations-table';
     }
 
-    public function setTableName($tableName)
-    {
-        $this->tableName = $tableName;
-    }
-
-    public function up()
+    public function up(): void
     {
         $query = "CREATE TABLE $this->tableName (
             id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -28,7 +20,7 @@ class CreateMigrationsTable extends BaseMigration
         $this->worker->query($query);
     }
 
-    public function down()
+    public function down(): void
     {
         $query = "DROP TABLE $this->tableName";
         $this->worker->query($query);

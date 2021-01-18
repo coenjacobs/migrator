@@ -33,9 +33,9 @@ class Handler
 
     /**
      * @param string $pluginKey
-     * @param $migrationClassName
+     * @param string $migrationClassName
      */
-    public function add($pluginKey, $migrationClassName)
+    public function add(string $pluginKey, string $migrationClassName): void
     {
         $this->migrations[ $pluginKey ][] = $migrationClassName;
     }
@@ -46,7 +46,7 @@ class Handler
      *
      * @param string $pluginKey
      */
-    public function up($pluginKey)
+    public function up(string $pluginKey): void
     {
         if (! isset($this->migrations[ $pluginKey ])) {
             return;
@@ -72,7 +72,7 @@ class Handler
      *
      * @param string $pluginKey
      */
-    public function down($pluginKey)
+    public function down(string $pluginKey): void
     {
         if (! isset($this->migrations[ $pluginKey ])) {
             return;
@@ -95,7 +95,10 @@ class Handler
         $this->downAction($migrationsToRun);
     }
 
-    protected function upAction($migrationsToRun)
+    /**
+     * @param array $migrationsToRun
+     */
+    protected function upAction(array $migrationsToRun): void
     {
         $batch = $this->logger->getHighestBatchNumber() + 1;
 
@@ -108,7 +111,10 @@ class Handler
         }
     }
 
-    protected function downAction($migrationsToRun)
+    /**
+     * @param array $migrationsToRun
+     */
+    protected function downAction(array $migrationsToRun): void
     {
         foreach ($migrationsToRun as $key => $migrations) {
             foreach ($migrations as $migration) {

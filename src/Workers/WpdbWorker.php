@@ -13,22 +13,22 @@ class WpdbWorker extends BaseWorker
         $this->wpdb = $wpdb;
     }
 
-    public function getPrefix()
+    public function getPrefix(): string
     {
         return $this->wpdb->prefix;
     }
 
-    public function getDatabaseName()
+    public function getDatabaseName(): string
     {
         return $this->wpdb->dbname;
     }
 
-    public function query($query)
+    public function query(string $query)
     {
         return $this->wpdb->query($query);
     }
 
-    public function getResults($query)
+    public function getResults(string $query)
     {
         return $this->wpdb->get_results($query);
     }
