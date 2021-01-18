@@ -101,7 +101,7 @@ class Handler
 
         foreach ($migrationsToRun as $key => $migrations) {
             foreach ($migrations as $migration) {
-                /** @var $migration Migration */
+                /** @var Migration $migration */
                 $migration->up();
                 $this->logger->add($key, $migration, $batch);
             }
@@ -112,7 +112,7 @@ class Handler
     {
         foreach ($migrationsToRun as $key => $migrations) {
             foreach ($migrations as $migration) {
-                /** @var $migration Migration */
+                /** @var Migration $migration */
                 $migration->down();
                 $this->logger->remove($key, $migration);
             }
